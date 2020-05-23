@@ -9,34 +9,12 @@ import { ChatbotBody } from "./ChatbotBody";
 const Chatbot = ({ ...props }) => {
   const { actions, user, loading } = props;
 
-  function handleRegister(userData) {
-    return actions
-      .registerUser(userData)
-      .then(() => {
-        return true;
-      })
-      .catch((error) => {
-        return error;
-      });
-  }
-
-  function handleLogin(userData) {
-    return actions
-      .loginUser(userData)
-      .then(() => {
-        return true;
-      })
-      .catch((error) => {
-        return error;
-      });
-  }
-
   return (
     <ChatbotBody
-      onRegister={handleRegister}
+      onRegister={actions.registerUser}
       response={user}
-      onLogin={handleLogin}
-      loading={loading}
+      onLogin={actions.loginUser}
+      saveTransaction={actions.saveTransaction}
     />
   );
 };
@@ -70,7 +48,7 @@ function mapDispatchToProps(dispatch) {
         transactionsActions.loadTransactions,
         dispatch
       ),
-      saveCourse: bindActionCreators(
+      saveTransaction: bindActionCreators(
         transactionsActions.saveTransaction,
         dispatch
       ),

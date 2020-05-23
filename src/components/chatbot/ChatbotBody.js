@@ -1,25 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import { BotMessage } from "./botMessage";
-import { UserMessage } from "./userMessage";
-// eslint-disable-next-line import/named
-import {
-  cancel,
-  hello,
-  logInFinal,
-  logInFirst, loginIssue,
-  logInSecond, loginSuccess,
-  notRecognized,
-  registerIssue,
-  registerSuccess,
-  setData,
-  signInFinal,
-  signInFirst,
-  signInSecond,
-  signInThird,
-} from "./Functions";
+import React, { useRef, useState } from "react";
+import { sendMessage, setData } from "./Functions";
+import { ChatbotContainer } from "./ChatbotContainer";
+import { signInBody } from "./components/signIn";
+import { logInBody } from "./components/logIn";
+import {transactionBody} from "./components/transaction"
 
 // eslint-disable-next-line react/prop-types
-export const ChatbotBody = ({ onRegister, response, onLogin, loading }) => {
+export const ChatbotBody = ({ onRegister, response, onLogin, saveTransaction }) => {
   const [messages, setMessages] = useState([
     { isChatbotMessage: 1, message: "Welcome to my world..." },
   ]);
@@ -29,75 +16,58 @@ export const ChatbotBody = ({ onRegister, response, onLogin, loading }) => {
   const [newTransaction, setNewTransaction] = useState(0);
   const myRef = useRef(null);
   const [userData, setUserData] = useState({});
+  const [transactionData, setTransactionData] = useState({});
 
-  const handleSendMessage = async () => {
+  console.log(response);
+  const handleSendMessage = () => {
     const newMessage = myRef.current.value;
-    myRef.current.value = "";
-    let newList = [...messages, { isChatbotMessage: 0, message: newMessage }];
-
-    if (signIn === 3) {
-      newList = [...messages, { isChatbotMessage: 0, message: "******" }];
-    }
-
+    const newList = initSendMessage(newMessage);
     setMessages(newList);
 
     if (signIn > 0) {
-      switch (signIn) {
-        case 1:
-          setIsLoading(true);
-          setUserData(setData(userData, { name: newMessage }));
-          setMessages(await signInSecond(newList));
-          setSignIn(signIn + 1);
-          setIsLoading(false);
-          break;
-        case 2:
-          setIsLoading(true);
-          setUserData(setData(userData, { user: newMessage }));
-          setMessages(await signInThird(newList));
-          setSignIn(signIn + 1);
-          setIsLoading(false);
-          break;
-        case 3:
-          setIsLoading(true);
-          setUserData(setData(userData, { password: newMessage }));
-          setMessages(await signInFinal(newList));
-          if (await onRegister(setData(userData, { password: newMessage })) ===  true) {
-            setMessages(await registerSuccess(newList));
-          } else {
-            setMessages(await registerIssue(newList));
-          }
-          setSignIn(0);
-          setIsLoading(false);
-          break;
-        default:
-      }
+      signInBody(
+        newList,
+        newMessage,
+        signIn,
+        setUserData,
+        userData,
+        sendBotMessage,
+        setSignIn,
+        onRegister,
+        setMessages
+      );
       myRef.current.focus();
       return;
     }
 
     if (logIn > 0) {
-      switch (logIn) {
-        case 1:
-          setIsLoading(true);
-          setUserData(setData(userData, { user: newMessage }));
-          setMessages(await logInSecond(newList));
-          setLogIn(logIn + 1);
-          setIsLoading(false);
-          break;
-        case 2:
-          setIsLoading(true);
-          setUserData(setData(userData, { password: newMessage }));
-          setMessages(await logInFinal(newList));
-          if(await onLogin(setData(userData, { password: newMessage }))) {
-            setMessages(await loginSuccess(newList));
-          } else {
-            setMessages(await loginIssue(newList));
-          }
-          setLogIn(0);
-          setIsLoading(false);
-          break;
-        default:
-      }
+      logInBody(
+        newList,
+        newMessage,
+        logIn,
+        setUserData,
+        userData,
+        sendBotMessage,
+        setLogIn,
+        onLogin,
+        setMessages
+      );
+      myRef.current.focus();
+      return;
+    }
+
+    if (newTransaction > 0) {
+      transactionBody(
+        newList,
+        newMessage,
+        newTransaction,
+        setTransactionData,
+        transactionData,
+        sendBotMessage,
+        setNewTransaction,
+        saveTransaction,
+        setMessages
+      );
       myRef.current.focus();
       return;
     }
@@ -105,92 +75,82 @@ export const ChatbotBody = ({ onRegister, response, onLogin, loading }) => {
     switch (newMessage.toLowerCase()) {
       case "hello":
       case "hello!":
-        setIsLoading(true);
-        setMessages(await hello(newList));
-        setIsLoading(false);
+        sendBotMessage(newList, "Hello!");
         break;
       case "cancel":
-        setIsLoading(true);
-        setMessages(await cancel(newList));
-        setSignIn(0);
-        setLogIn(0);
-        setNewTransaction(0);
-        setIsLoading(false);
+        sendBotMessage(newList, "Cancelled");
+        cancelAction();
         break;
       case "clear":
-        setIsLoading(true);
         setMessages([]);
-        setIsLoading(false);
         break;
       case "signin":
       case "sign in":
       case "sign":
       case "signup":
       case "sign up":
-        setIsLoading(true);
-        setMessages(await signInFirst(newList));
+        sendBotMessage(newList, "Type your name");
         setSignIn(signIn + 1);
-        setIsLoading(false);
         break;
       case "login":
       case "log in":
-        setIsLoading(true);
-        setMessages(await logInFirst(newList));
+        sendBotMessage(newList, "Type your user");
         setLogIn(logIn + 1);
-        setIsLoading(false);
+        break;
+      case "withdraw":
+      case "deposit":
+        sendBotMessage(newList, "Enter the amount");
+        if(newMessage === "withdraw"){
+          setTransactionData(setData(transactionData, { amount: -1 }));
+        } else {
+          setTransactionData(setData(transactionData, { amount: 1 }));
+        }
+        setNewTransaction(newTransaction + 1);
         break;
       default:
-        setIsLoading(true);
-        setMessages(await notRecognized(newList));
-        setIsLoading(false);
+        sendBotMessage(newList, "Message not recognized");
     }
     myRef.current.focus();
   };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
-      handleSendMessage().then();
+      handleSendMessage();
     }
   };
 
+  const sendBotMessage = (newList, newMessage) => {
+    setIsLoading(true);
+    setMessages(sendMessage(newList, newMessage));
+    setIsLoading(false);
+  };
+
+  const cancelAction = () => {
+    setSignIn(0);
+    setLogIn(0);
+    setNewTransaction(0);
+  };
+
+  const initSendMessage = (newMessage) => {
+    myRef.current.value = "";
+    let newList = [...messages, { isChatbotMessage: 0, message: newMessage }];
+
+    if (signIn === 3 || logIn === 2) {
+      newList = [...messages, { isChatbotMessage: 0, message: "******" }];
+    }
+
+    return newList;
+  };
+
   return (
-    <div className="container">
-      <h3 className=" text-center">Chatbot</h3>
-      <div className="messaging">
-        <div className="inbox_msg">
-          <div className="mesgs">
-            <div className="msg_history">
-              {messages.map((message, index) => {
-                if (message.isChatbotMessage) {
-                  return <BotMessage key={index} message={message} />;
-                } else {
-                  return <UserMessage key={index} message={message} />;
-                }
-              })}
-            </div>
-            <div className="type_msg">
-              <div className="input_msg_write">
-                <input
-                  autoFocus
-                  onKeyPress={handleKeyPress}
-                  disabled={isLoading ?? "disabled"}
-                  type={signIn === 3 ? "password" : "text"}
-                  className="write_msg"
-                  placeholder="Type a message"
-                  ref={myRef}
-                />
-                <button
-                  className="msg_send_btn"
-                  type="button"
-                  onClick={handleSendMessage}
-                >
-                  <i className="fa fa-paper-plane-o" aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ChatbotContainer
+      myRef={myRef}
+      handleSendMessage={handleSendMessage}
+      handleKeyPress={handleKeyPress}
+      isLoading={isLoading}
+      logInCount={logIn}
+      messages={messages}
+      signInCount={signIn}
+    />
   );
 };
