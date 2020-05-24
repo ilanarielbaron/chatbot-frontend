@@ -7,7 +7,7 @@ import { bindActionCreators } from "redux";
 import { ChatbotBody } from "./ChatbotBody";
 
 const Chatbot = ({ ...props }) => {
-  const { actions, user, loading } = props;
+  const { actions, user, transactions } = props;
 
   return (
     <ChatbotBody
@@ -15,6 +15,9 @@ const Chatbot = ({ ...props }) => {
       response={user}
       onLogin={actions.loginUser}
       saveTransaction={actions.saveTransaction}
+      getTransactions={actions.loadTransactions}
+      transactions={transactions}
+      updateCurrency={actions.updateCurrency}
     />
   );
 };
@@ -30,7 +33,7 @@ function mapStateToProps(state) {
   return {
     transactions: !state.user
       ? []
-      : state.transactions.map((transaction) => {
+      : state.transactions.data?.map((transaction) => {
           return {
             ...transaction,
             user: state.user.name,
@@ -54,6 +57,7 @@ function mapDispatchToProps(dispatch) {
       ),
       loginUser: bindActionCreators(userActions.login, dispatch),
       registerUser: bindActionCreators(userActions.register, dispatch),
+      updateCurrency: bindActionCreators(userActions.updateCurrency, dispatch),
     },
   };
 }

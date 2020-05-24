@@ -10,6 +10,10 @@ export function registerUserSuccess(user) {
   return { type: types.REGISTER_USER_SUCCESS, user };
 }
 
+export function updatedCurrencySuccess(user) {
+  return { type: types.UPDATE_CURRENCY_SUCCESS, user };
+}
+
 //TODO: redux thunk middleware
 export function login(userData) {
   return function (dispatch) {
@@ -26,7 +30,6 @@ export function login(userData) {
   };
 }
 
-//TODO: redux thunk middleware
 export function register(userData) {
   return function (dispatch) {
     dispatch(beginApiCall());
@@ -34,6 +37,22 @@ export function register(userData) {
       .register(userData)
       .then((user) => {
         dispatch(registerUserSuccess(user));
+      })
+      .catch((error) => {
+        dispatch(apiCallError(error));
+        throw error;
+      });
+  };
+}
+
+export function updateCurrency(defaultCurrency, response) {
+  //eslint-disable-next-line no-unused-vars
+  return function (dispatch) {
+    dispatch(beginApiCall());
+    return userApi
+      .updateCurrency(defaultCurrency, response)
+      .then((user) => {
+        dispatch(updatedCurrencySuccess(user));
       })
       .catch((error) => {
         dispatch(apiCallError(error));

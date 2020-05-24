@@ -9,7 +9,8 @@ export const transactionBody = (
   sendBotMessage,
   setNewTransaction,
   saveTransaction,
-  setMessages
+  setMessages,
+  response
 ) => {
   switch (transactionCount) {
     case 1:
@@ -20,7 +21,7 @@ export const transactionBody = (
       );
       sendBotMessage(
         newList,
-        "Enter currency (press enter if dont need to convert)"
+        "Enter currency"
       );
       setNewTransaction(transactionCount + 1);
       break;
@@ -29,11 +30,7 @@ export const transactionBody = (
         setTransactionData(setData(transactionData, { currency: newMessage }));
       }
       sendBotMessage(newList, "Wait...");
-      saveTransaction(
-        newMessage !== ""
-          ? setData(transactionData, { currency: newMessage })
-          : transactionData
-      )
+      saveTransaction((newMessage !== "" ? setData(transactionData, { currency: newMessage }) : transactionData), response)
         .then(() => {
           setMessages(sendMessage(newList, "Transaction added"));
         })

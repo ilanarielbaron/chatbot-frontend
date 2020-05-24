@@ -20,3 +20,15 @@ export function login(userData) {
     .then(handleResponse)
     .catch(handleError);
 }
+
+export function updateCurrency(defaultCurrency, response) {
+  const userId = response.data.id;
+  const bearer = "Bearer " + response.data.token;
+  return fetch(baseUrl + "users/" + userId + "/set-currency", {
+    method: "PATCH",
+    headers: { 'Content-Type':'application/json', Authorization: bearer },
+    body: JSON.stringify({...defaultCurrency})
+  })
+    .then(handleResponse)
+    .catch(handleError);
+}

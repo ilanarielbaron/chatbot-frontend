@@ -32,7 +32,7 @@ export const ChatbotContainer = ({
                 onKeyPress={handleKeyPress}
                 disabled={isLoading ?? "disabled"}
                 type={
-                  signInCount === 3 || logInCount === 2 ? "password" : "text"
+                  signInCount === 4 || logInCount === 2 ? "password" : "text"
                 }
                 className="write_msg"
                 placeholder="Type a message"

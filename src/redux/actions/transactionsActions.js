@@ -11,11 +11,11 @@ export function loadTransactionsSuccess(transactions) {
 }
 
 //TODO: redux thunk middleware
-export function loadTransactions() {
+export function loadTransactions(response) {
   return function (dispatch) {
     dispatch(beginApiCall());
     return transactionsApi
-      .getTransactions()
+      .getTransactions(response)
       .then((transactions) => {
         dispatch(loadTransactionsSuccess(transactions));
       })
@@ -26,17 +26,16 @@ export function loadTransactions() {
   };
 }
 
-
-export function saveTransaction(transaction, userId) {
+export function saveTransaction(transaction, response) {
   //eslint-disable-next-line no-unused-vars
-  return function(dispatch, getState) {
+  return function (dispatch) {
     dispatch(beginApiCall());
     return transactionsApi
-      .saveTransaction(transaction, userId)
-      .then(savedTransaction => {
+      .saveTransaction(transaction, response)
+      .then((savedTransaction) => {
         dispatch(createTransactionSuccess(savedTransaction));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(apiCallError(error));
         throw error;
       });

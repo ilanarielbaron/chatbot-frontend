@@ -9,10 +9,17 @@ export const signInBody = (newList, newMessage, signIn, setUserData, userData, s
       break;
     case 2:
       setUserData(setData(userData, { user: newMessage }));
-      sendBotMessage(newList, "Type your password");
+      sendBotMessage(newList, "Type your default currency");
       setSignIn(signIn + 1);
       break;
     case 3:
+      if(newMessage && newMessage !== "") {
+        setUserData(setData(userData, { defaultCurrency: newMessage }));
+      }
+      sendBotMessage(newList, "Type your password");
+      setSignIn(signIn + 1);
+      break;
+    case 4:
       setUserData(setData(userData, { password: newMessage }));
       sendBotMessage(newList, "Wait...");
       onRegister(setData(userData, { password: newMessage }))
