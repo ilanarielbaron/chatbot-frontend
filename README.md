@@ -5,7 +5,7 @@
 3. Run npm install
 4. Run npm start
 
-####COMMANDS:\
+#### COMMANDS:\
 "sign" or "s" ----------------------------- User sign up\
 login or "l" ----------------------------- User log-in\
 "currency" or "sc" --------------------- Set default currency\
