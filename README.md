@@ -5,7 +5,7 @@
 3. Run npm install
 4. Run npm start
 
-#### COMMANDS:\
+#### COMMANDS:
 "sign" or "s" ----------------------------- User sign up\
 login or "l" ----------------------------- User log-in\
 "currency" or "sc" --------------------- Set default currency\
@@ -13,4 +13,4 @@ login or "l" ----------------------------- User log-in\
 "transactions" or "t" ------------------ See the user transactions\
 "withdraw" -------------------------- Withdraw money\
 "deposit" ----------------------------- Deposit in the account\
-"clear" --------------------------------- Clear the screen"\
+"clear" --------------------------------- Clear the screen"
