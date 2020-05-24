@@ -1,6 +1,4 @@
-# Starter Kit for [Building Applications in React and Redux](http://www.pluralsight.com/author/cory-house) on Pluralsight
-
-## Get Started
+## Chatbot frontend app
 
 1. **Install [Node 8](https://nodejs.org)** or newer.
 2. Start chatbot backend server.
